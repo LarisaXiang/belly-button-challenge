@@ -10,6 +10,7 @@ function init() {
       // Load the first sample's data
       updatePlot(data.names[0], data);
       updateBubblePlot(data.names[0], data);
+      displayMetadata(data.names[0], data);
 
       // console.log(data)
   });
@@ -48,7 +49,7 @@ function updatePlot(sampleID, data) {
 function updateBubblePlot(sampleID, data) {
   // Filter data based on sampleID
   const sample = data.samples.filter(s => s.id === sampleID)[0];
-  console.log (sample)
+  // console.log (sample)
 
   const otuIds = sample.otu_ids;
   const sampleValues = sample.sample_values;
@@ -74,7 +75,30 @@ function updateBubblePlot(sampleID, data) {
   };
 
   Plotly.newPlot('bubble', bubbleData, bubbleLayout);
+
+  // Display metadata for the selected sample
+  displayMetadata(sampleID, data);
 }
+
+// Function to display sample metadata
+function displayMetadata(sampleID, data) {
+  // Find the metadata for the selected sample
+  const metadata = data.metadata.filter(m => m.id === parseInt(sampleID))[0];
+  // console.log(sample);
+
+  // Select the HTML element where the metadata will be displayed
+  const metadataPanel = d3.select("#sample-metadata");
+  
+
+  // Clear existing metadata
+  metadataPanel.html("");
+
+  // Display each key-value pair from the metadata
+  Object.entries(metadata).forEach(([key, value]) => {
+    metadataPanel.append("p").text(`${key}: ${value}`);
+  });
+}
+
 // Function to handle the dropdown menu value change
 function optionChanged(newSample) {
   d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json").then(data => {
